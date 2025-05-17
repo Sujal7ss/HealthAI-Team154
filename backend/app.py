@@ -1,8 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_socketio import SocketIO, send
 from stt import transcribe_audio
-import socketio
-
 
 app = Flask(__name__)
 
@@ -21,10 +19,6 @@ def echo():
         "received": data
     })
 
-@socketio.on('message')
-def handle_message(msg):
-    print('Received message: ' + msg)
-    send("Echo: " + msg, broadcast=True)
 
 if __name__ == '__main__':
     app.run(port=8000)
