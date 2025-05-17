@@ -7,7 +7,7 @@ import socketio
 model = whisper.load_model("base")
 
 sio = socketio.Client()
-sio.connect("http://localhost:3000")
+sio.connect("http://localhost:5173/")
 
 def record_audio(duration=5, fs=16000):
     print("Recording...")

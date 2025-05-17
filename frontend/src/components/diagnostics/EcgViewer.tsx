@@ -78,19 +78,46 @@ const EcgViewer: React.FC<EcgViewerProps> = ({ patientId }) => {
     }
   };
 
-  const analyzeEcg = async () => {
-    if (!ecgData.length) return;
+  // const analyzeEcg = async () => {
+  //   if (!ecgData.length) return;
     
-    setIsAnalyzing(true);
-    try {
-      const result = await mockDiagnosticsApi.analyzeDiagnosticData('ecg', { values: ecgData });
-      setAnalysis(result);
-    } catch (error) {
-      console.error('Error analyzing ECG:', error);
-    } finally {
-      setIsAnalyzing(false);
+  //   setIsAnalyzing(true);
+  //   try {
+  //     const result = await mockDiagnosticsApi.analyzeDiagnosticData('ecg', { values: ecgData });
+  //     setAnalysis(result);
+  //   } catch (error) {
+  //     console.error('Error analyzing ECG:', error);
+  //   } finally {
+  //     setIsAnalyzing(false);
+  //   }
+  // };
+
+  const analyzeEcg = async () => {
+  if (!file) return;
+
+  setIsAnalyzing(true);
+
+  try {
+    const formData = new FormData();
+    formData.append('file', file);  // send the ECG .csv file
+
+    const response = await fetch('http://127.0.0.1:8000/predict/', {
+      method: 'POST',
+      body: formData,
+    });
+    console.log(response);
+    if (!response.ok) {
+      throw new Error('Failed to analyze ECG');
     }
-  };
+
+    const result = await response.json();
+    setAnalysis(result);  // result should be { riskScore, observations, conclusion }
+  } catch (error) {
+    console.error('Error analyzing ECG:', error);
+  } finally {
+    setIsAnalyzing(false);
+  }
+};
 
   const chartData = {
     labels,

@@ -56,6 +56,7 @@ def gradio_ui():
 # Prediction endpoint
 @app.post("/predict/")
 async def predict_ecg(file: UploadFile = File(...)):
+    print("Received file:", file.filename)
     contents = await file.read()
     img_array = preprocess_image(contents)
     prediction = model.predict(img_array)
