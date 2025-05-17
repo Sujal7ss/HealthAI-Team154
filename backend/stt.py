@@ -3,11 +3,8 @@ import sounddevice as sd
 import numpy as np
 import tempfile
 import scipy.io.wavfile as wav
-import socketio
 model = whisper.load_model("base")
 
-sio = socketio.Client()
-sio.connect("http://localhost:5173/")
 
 def record_audio(duration=5, fs=16000):
     print("Recording...")
@@ -24,16 +21,7 @@ def transcribe_audio():
              result = model.transcribe(f.name)
              resulttranslated = model.transcribe(f.name, task="translate")
 
-             # Prepare message payload
-             payload = {
-                "original": result["text"],
-                "translated": resulttranslated["text"]
-            }
-
-            # Emit message to frontend via socket
-             sio.emit("transcription_result", payload)
              print("Translated:", resulttranslated["text"])
              print("You said:", result["text"])
 
-transcribe_audio()
-# __all__ = ['transcribe_audio']       
+__all__ = ['transcribe_audio']       
