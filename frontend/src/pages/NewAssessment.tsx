@@ -12,7 +12,7 @@ import {
   mockPatientsApi,
 } from "../utils/mockApi";
 import { useAuth } from "../context/AuthContext";
-import socket from "../socket";
+// import socket from "../socket";
 
 enum AssessmentStep {
   PATIENT_INFO = "PATIENT_INFO",
@@ -38,24 +38,24 @@ const NewAssessment: React.FC = () => {
 
   const [liveTranscript, setLiveTranscript] = useState<string>("");
   const [liveTranslation, setLiveTranslation] = useState<string>("");
-  useEffect(() => {
-    if (currentStep === AssessmentStep.SYMPTOMS_INPUT) {
-      socket.connect();
+  // useEffect(() => {
+  //   if (currentStep === AssessmentStep.SYMPTOMS_INPUT) {
+  //     socket.connect();
 
-      socket.on(
-        "transcription_result",
-        (data: { original: string; translated: string }) => {
-          setLiveTranscript(data.original);
-          setLiveTranslation(data.translated);
-        }
-      );
+  //     socket.on(
+  //       "transcription_result",
+  //       (data: { original: string; translated: string }) => {
+  //         setLiveTranscript(data.original);
+  //         setLiveTranslation(data.translated);
+  //       }
+  //     );
 
-      return () => {
-        socket.off("transcription_result");
-        socket.disconnect();
-      };
-    }
-  }, [currentStep]);
+  //     return () => {
+  //       socket.off("transcription_result");
+  //       socket.disconnect();
+  //     };
+  //   }
+  // }, [currentStep]);
   const { user } = useAuth();
   const navigate = useNavigate();
 
