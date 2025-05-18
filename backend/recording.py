@@ -8,7 +8,8 @@ from openai import OpenAI
 import os
 import time
 
-client = OpenAI(api_key="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")
+# api = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=api)
 # Set your API key
 
 # ---- Core functions ----
