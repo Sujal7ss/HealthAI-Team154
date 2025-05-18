@@ -40,6 +40,6 @@ export interface DiagnosticResult {
 
 export interface VoiceRecognitionResult {
   text: string;
-  language: string;
   confidence: number;
+  language: string;
 }

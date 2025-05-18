@@ -1,29 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Mic, StopCircle } from 'lucide-react';
-import { mockVoiceRecognition } from '../../utils/mockApi';
 import { VoiceRecognitionResult } from '../../types';
 
 interface VoiceRecorderProps {
   onRecordingComplete: (result: VoiceRecognitionResult) => void;
 }
 
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any;
+    SpeechRecognition: any;
+  }
+}
+
 const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState('auto');
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     let interval: number | undefined;
-    
+
     if (isRecording) {
       interval = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
+        setRecordingTime((prev) => prev + 1);
       }, 1000);
     } else {
       setRecordingTime(0);
     }
-    
+
     return () => {
       if (interval) clearInterval(interval);
     };
@@ -35,33 +42,57 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const startRecording = async () => {
-    try {
-      await mockVoiceRecognition.startRecording();
-      setIsRecording(true);
-    } catch (error) {
-      console.error('Error starting recording:', error);
+  const startRecording = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert('Your browser does not support speech recognition.');
+      return;
     }
+
+    const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
+
+    recognition.lang = selectedLanguage === 'auto' ? 'en-US' : selectedLanguage;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsRecording(true);
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = event.results[0][0].transcript;
+      const confidence = event.results[0][0].confidence;
+
+      onRecordingComplete({
+        text: transcript,
+        confidence,
+        language: recognition.lang,
+      });
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Recognition error:', event.error);
+    };
+
+    recognition.onend = () => setIsRecording(false);
+
+    recognition.start();
   };
 
-  const stopRecording = async () => {
-    try {
-      const result = await mockVoiceRecognition.stopRecording();
-      setIsRecording(false);
-      onRecordingComplete(result);
-    } catch (error) {
-      console.error('Error stopping recording:', error);
-      setIsRecording(false);
+  const stopRecording = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
     }
   };
 
   const languages = [
     { code: 'auto', name: 'Auto-detect' },
-    { code: 'en', name: 'English' },
-    { code: 'es', name: 'Spanish' },
-    { code: 'fr', name: 'French' },
-    { code: 'hi', name: 'Hindi' },
-    { code: 'ar', name: 'Arabic' },
+    { code: 'en-US', name: 'English' },
+    { code: 'es-ES', name: 'Spanish' },
+    { code: 'fr-FR', name: 'French' },
+    { code: 'hi-IN', name: 'Hindi' },
+    { code: 'ar-SA', name: 'Arabic' },
   ];
 
   const pulseVariants = {
@@ -71,13 +102,13 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
       transition: {
         duration: 1.5,
         repeat: Infinity,
-        ease: "easeInOut"
-      }
+        ease: 'easeInOut',
+      },
     },
     idle: {
       scale: 1,
-      opacity: 1
-    }
+      opacity: 1,
+    },
   };
 
   return (
@@ -96,10 +127,10 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
           ))}
         </select>
       </div>
-      
+
       <motion.div
         variants={pulseVariants}
-        animate={isRecording ? "recording" : "idle"}
+        animate={isRecording ? 'recording' : 'idle'}
         className={`relative rounded-full p-8 ${
           isRecording ? 'bg-error-500' : 'bg-primary-500'
         }`}
@@ -107,7 +138,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
         <button
           onClick={isRecording ? stopRecording : startRecording}
           className="flex items-center justify-center p-4 rounded-full bg-white text-neutral-900 focus:outline-none transform transition-transform active:scale-95"
-          aria-label={isRecording ? "Stop recording" : "Start recording"}
+          aria-label={isRecording ? 'Stop recording' : 'Start recording'}
         >
           {isRecording ? (
             <StopCircle size={48} className="text-error-500" />
@@ -116,15 +147,13 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
           )}
         </button>
       </motion.div>
-      
-      {isRecording && (
+
+      {isRecording ? (
         <div className="mt-4 text-center">
           <p className="text-lg font-medium">Recording... {formatTime(recordingTime)}</p>
           <p className="text-sm text-neutral-500 mt-1">Tap the button to stop</p>
         </div>
-      )}
-      
-      {!isRecording && (
+      ) : (
         <p className="mt-4 text-center text-neutral-600">
           Tap the microphone to start recording
         </p>
