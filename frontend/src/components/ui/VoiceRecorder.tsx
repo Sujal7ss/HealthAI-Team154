@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Mic, StopCircle } from 'lucide-react';
 import { VoiceRecognitionResult } from '../../types';
+import { translateText } from '../../utils/reverieTranslate';
 
 interface VoiceRecorderProps {
   onRecordingComplete: (result: VoiceRecognitionResult) => void;
@@ -18,13 +19,16 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState('auto');
+  const [interimTranscript, setInterimTranscript] = useState('');
+  const [finalTranscript, setFinalTranscript] = useState('');
+  const [translatedText, setTranslatedText] = useState('');
   const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     let interval: number | undefined;
 
     if (isRecording) {
-      interval = setInterval(() => {
+      interval = window.setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
     } else {
@@ -43,8 +47,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
   };
 
   const startRecording = () => {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       alert('Your browser does not support speech recognition.');
@@ -55,27 +58,58 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
     recognitionRef.current = recognition;
 
     recognition.lang = selectedLanguage === 'auto' ? 'en-US' : selectedLanguage;
-    recognition.interimResults = false;
+    recognition.interimResults = true;
     recognition.maxAlternatives = 1;
+
+    setFinalTranscript('');
+    setInterimTranscript('');
+    setTranslatedText('');
 
     recognition.onstart = () => setIsRecording(true);
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = event.results[0][0].transcript;
-      const confidence = event.results[0][0].confidence;
+    recognition.onresult = async (event: SpeechRecognitionEvent) => {
+      let interim = '';
+      let final = '';
 
-      onRecordingComplete({
-        text: transcript,
-        confidence,
-        language: recognition.lang,
-      });
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          final += transcript + ' ';
+        } else {
+          interim += transcript;
+        }
+      }
+
+      setInterimTranscript(interim);
+      setFinalTranscript((prev) => prev + final);
+
+      if (final.trim()) {
+        // Trigger translation on final transcript
+        const srcLang = recognition.lang.split('-')[0]; // e.g. 'hi-IN' -> 'hi'
+        try {
+          const translated = await translateText(final.trim(), srcLang, 'en'); // translate to English
+          console.log('Translated:', translated);
+          setTranslatedText((prev) => prev + translated + ' ');
+        } catch (err) {
+          console.error('Translation error:', err);
+        }
+
+        onRecordingComplete({
+          text: final.trim(),
+          confidence: 1,
+          language: recognition.lang,
+        });
+      }
     };
 
     recognition.onerror = (event: any) => {
       console.error('Recognition error:', event.error);
     };
 
-    recognition.onend = () => setIsRecording(false);
+    recognition.onend = () => {
+      setIsRecording(false);
+      setInterimTranscript('');
+    };
 
     recognition.start();
   };
@@ -87,12 +121,15 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
   };
 
   const languages = [
-    { code: 'auto', name: 'Auto-detect' },
-    { code: 'en-US', name: 'English' },
-    { code: 'es-ES', name: 'Spanish' },
-    { code: 'fr-FR', name: 'French' },
+    { code: 'auto', name: 'Auto-detect' },  
     { code: 'hi-IN', name: 'Hindi' },
-    { code: 'ar-SA', name: 'Arabic' },
+    { code: 'bn-IN', name: 'Bengali' },
+    { code: 'ta-IN', name: 'Tamil' },
+    { code: 'te-IN', name: 'Telugu' },
+    { code: 'mr-IN', name: 'Marathi' },
+    { code: 'gu-IN', name: 'Gujarati' },
+    { code: 'kn-IN', name: 'Kannada' },
+    { code: 'ml-IN', name: 'Malayalam' },
   ];
 
   const pulseVariants = {
@@ -148,15 +185,33 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
         </button>
       </motion.div>
 
-      {isRecording ? (
-        <div className="mt-4 text-center">
-          <p className="text-lg font-medium">Recording... {formatTime(recordingTime)}</p>
-          <p className="text-sm text-neutral-500 mt-1">Tap the button to stop</p>
+      <div className="mt-4 text-center">
+        {isRecording ? (
+          <>
+            <p className="text-lg font-medium">Recording... {formatTime(recordingTime)}</p>
+            <p className="text-sm text-neutral-500 mt-1">Tap the button to stop</p>
+          </>
+        ) : (
+          <p className="text-neutral-600">Tap the microphone to start recording</p>
+        )}
+      </div>
+
+      {(finalTranscript || interimTranscript) && (
+        <div className="mt-6 px-4 text-center max-w-xl">
+          <p className="text-base font-semibold mb-2">Live Transcript:</p>
+          <p className="text-neutral-800">
+            {finalTranscript}
+            <span className="text-neutral-400 italic">{interimTranscript}</span>
+          </p>
+
+          {/* Show translated text */}
+          {translatedText && (
+            <>
+              <p className="text-base font-semibold mt-4 mb-2">Translation (English):</p>
+              <p className="text-neutral-700 italic">{translatedText}</p>
+            </>
+          )}
         </div>
-      ) : (
-        <p className="mt-4 text-center text-neutral-600">
-          Tap the microphone to start recording
-        </p>
       )}
     </div>
   );
