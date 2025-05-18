@@ -33,6 +33,20 @@ An AI-driven platform that assists doctors through:
 
 ---
 
+   ### 💰 Business Model
+   
+1. **B2B SaaS**: Offer subscription-based access to hospitals and clinics, providing scalable AI diagnostics and multilingual assistance.
+
+2. **Freemium Model**: Provide essential features for free to encourage adoption, with premium diagnostics and advanced analytics available through paid tiers.
+
+3. **API Licensing**: License our AI diagnostic APIs to medical device manufacturers, enabling integration into their products and expanding our reach.
+
+4. **Data Analytics Services**: Offer anonymized health data insights to researchers and public health agencies, ensuring compliance with data privacy regulations.
+
+5. **Training & Certification**: Provide online training modules and certification programs for healthcare professionals to ensure effective use of our platform.
+
+---
+
 ## 📁 File Structure
 
 HealthAI-Team154/
@@ -154,14 +168,6 @@ These models collectively provide a comprehensive diagnostic overview, aiding ph
 - **General Physicians** in under-resourced areas.
 - **Mobile Health Clinics** and NGO healthcare providers.
 - **Public Health Missions** like Ayushman Bharat and NHM.
-
----
-
-## 💰 Business Model
-
-- **B2B SaaS** for hospitals/clinics
-- **Freemium** access with premium diagnostics
-- **API Licensing** to diagnostic device manufacturers
 
 ---
 
