@@ -11,11 +11,12 @@ interface SymptomsInputProps {
 
 const SymptomsInput: React.FC<SymptomsInputProps> = ({ onNext }) => {
   const [recordingResult, setRecordingResult] = useState<VoiceRecognitionResult | null>(null);
-  const [manualInput, setManualInput] = useState('');
+  const [manualInput, setManualInput] = useState('Hello dummy');
   const [showTextInput, setShowTextInput] = useState(false);
 
   const handleRecordingComplete = (result: VoiceRecognitionResult) => {
     setRecordingResult(result);
+    console.log('Recording result:', result);
     setManualInput(result.text);
   };
 

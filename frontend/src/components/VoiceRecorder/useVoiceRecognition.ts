@@ -10,18 +10,19 @@ export const useVoiceRecognition = (
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [interimTranscript, setInterimTranscript] = useState("");
-  const [interimTranslated, setInterimTranslated] = useState(""); // new state for interim translation
+  const [interimTranslated, setInterimTranslated] = useState("");
   const [finalTranscript, setFinalTranscript] = useState("");
   const [translatedText, setTranslatedText] = useState("");
 
   const recognitionRef = useRef<any>(null);
   const manualStopRef = useRef(false);
 
-  // Store entire conversation (final + all interim chunks concatenated)
+  // Accumulate final recognized text
   const conversationRef = useRef("");
 
   useEffect(() => {
     let interval: number | undefined;
+
     if (isRecording) {
       interval = window.setInterval(() => {
         setRecordingTime((prev) => prev + 1);
@@ -63,14 +64,14 @@ export const useVoiceRecognition = (
         if (event.results[i].isFinal) {
           final += transcript + " ";
         } else {
-          interim = transcript; // only keep last interim transcript chunk
+          interim = transcript; // keep only last interim chunk
         }
       }
 
       if (interim) {
         setInterimTranscript(interim);
 
-        // Translate the interim transcript live
+        // Translate interim transcript
         const detectedLang = recognition.lang.split("-")[0];
         try {
           const interimTranslatedText = await translateText(
@@ -81,7 +82,7 @@ export const useVoiceRecognition = (
           setInterimTranslated(interimTranslatedText);
         } catch (err) {
           console.error("Interim translation error:", err);
-          setInterimTranslated(""); // clear on error
+          setInterimTranslated("");
         }
       } else {
         setInterimTranscript("");
@@ -89,31 +90,25 @@ export const useVoiceRecognition = (
       }
 
       if (final) {
-        // Update final transcript and translated text accumulations
         setFinalTranscript((prev) => prev + final);
         setInterimTranscript("");
         setInterimTranslated("");
 
         const detectedLang = recognition.lang.split("-")[0];
         try {
-          const translated = await translateText(
-            final.trim(),
-            detectedLang,
-            tgtLang
-          );
+          const translated = await translateText(final.trim(), detectedLang, tgtLang);
           setTranslatedText((prev) => prev + translated + " ");
+          conversationRef.current += translated + " ";
+
+          // Pass the translated final text as manual input
+          onRecordingComplete({
+            text: conversationRef.current.trim(),
+            confidence: 1,
+            language: recognition.lang,
+          });
         } catch (err) {
           console.error("Translation error:", err);
         }
-
-        // Update entire conversation storage (final chunks + last interim cleared)
-        conversationRef.current += final;
-
-        onRecordingComplete({
-          text: conversationRef.current.trim(),
-          confidence: 1,
-          language: recognition.lang,
-        });
       }
     };
 

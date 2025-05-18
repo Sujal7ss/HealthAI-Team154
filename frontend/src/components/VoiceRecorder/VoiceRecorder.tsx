@@ -10,6 +10,7 @@ interface VoiceRecorderProps {
 }
 
 const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) => {
+  // Hooks are always called unconditionally here
   const [srcLang, setSrcLang] = useState("auto");
   const [tgtLang, setTgtLang] = useState("en");
 
@@ -17,13 +18,20 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
     isRecording,
     recordingTime,
     interimTranscript,
+    interimTranslated,
     finalTranscript,
     translatedText,
     startRecognition,
     stopRecognition,
   } = useVoiceRecognition(srcLang, tgtLang, onRecordingComplete);
 
-  const toggleRecording = () => (isRecording ? stopRecognition() : startRecognition());
+  const toggleRecording = () => {
+    if (isRecording) {
+      stopRecognition();
+    } else {
+      startRecognition();
+    }
+  };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -58,6 +66,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
         <TranscriptDisplay
           finalTranscript={finalTranscript}
           interimTranscript={interimTranscript}
+          interimTranslated={interimTranslated}
           translatedText={translatedText}
           tgtLang={tgtLang}
         />

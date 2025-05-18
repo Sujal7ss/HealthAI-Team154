@@ -1,8 +1,8 @@
 import ReverieClient from "reverie-client";
 
 const reverieClient = new ReverieClient({
-  apiKey: "e1169947b5614c49592f25e4f7ab54e06f5bc255",
-  appId: "dev.sujalchahande3",
+  apiKey: import.meta.env.VITE_REVERIE_API_KEY,
+  appId: import.meta.env.VITE_REVERIE_APP_ID,
 });
 
 export async function translateText(
