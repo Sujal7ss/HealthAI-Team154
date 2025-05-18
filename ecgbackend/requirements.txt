@@ -8,6 +8,8 @@ numpy
 torch
 openai-whisper
 torchaudio
-openai-whisper
+whisper
 python-multipart
 gradio
+tempfile
+shutil
