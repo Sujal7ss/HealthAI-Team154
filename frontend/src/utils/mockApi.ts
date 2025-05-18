@@ -1,5 +1,5 @@
 import { Assessment, DiagnosticResult, Patient, User, VoiceRecognitionResult } from '../types';
-
+import { assessmentResult } from '../components/assessment/deepseek';
 // Mock delay function to simulate API calls
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -223,24 +223,25 @@ export const mockGptMedicalAssessment = {
     suggestedTests: string[]; 
     treatmentSuggestions: string[] 
   }> => {
-    await delay(3000);
+    
     // Mock GPT response
-    if (symptoms.toLowerCase().includes('headache') || symptoms.toLowerCase().includes('dizziness')) {
+    const response = await assessmentResult({ text: symptoms });
+    if (response) {
       return {
-        symptoms: ['Headache', 'Dizziness', 'Right-sided pain', 'Orthostatic symptoms'],
-        possibleCauses: ['Migraine', 'Tension headache', 'Dehydration', 'Orthostatic hypotension'],
-        suggestedTests: ['Blood pressure assessment', 'Complete blood count', 'Neurological examination'],
-        treatmentSuggestions: ['Hydration', 'Analgesics for pain relief', 'Rest in a quiet, dark room']
+        symptoms: response.Key_Symptoms_Findings,
+        possibleCauses: response.Possible_Causes,
+        suggestedTests: response.Suggested_Tests,
+        treatmentSuggestions: response.Suggested_Treatment
       };
     }
     
     // Default response
     return {
-      symptoms: ['Generalized symptoms noted', 'Additional assessment needed'],
-      possibleCauses: ['Multiple potential etiologies', 'Further examination required'],
-      suggestedTests: ['Complete physical examination', 'Basic laboratory workup'],
-      treatmentSuggestions: ['Symptomatic management', 'Follow-up assessment']
-    };
+      symptoms: ['Headache', 'Dizziness', 'Right-sided pain', 'Orthostatic symptoms'],
+        possibleCauses: ['Migraine', 'Tension headache', 'Dehydration', 'Orthostatic hypotension'],
+        suggestedTests: ['Blood pressure assessment', 'Complete blood count', 'Neurological examination'],
+        treatmentSuggestions: ['Hydration', 'Analgesics for pain relief', 'Rest in a quiet, dark room']
+     };
   }
 };
 
