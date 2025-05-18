@@ -48,24 +48,16 @@ An AI-driven platform that assists doctors through:
 ---
 
 ## 📁 File Structure
-
+```
 HealthAI-Team154/
-
 ├── backend/
-
 │ ├── fastapi/ # Python backend for clinical NLP and ML models
-
 │ └── node-backend/ # Node.js backend for user authentication and session management
-
 ├── ecgbackend/ # Backend for ECG data processing
-
 ├── frontend/ # React-based responsive frontend
-
 ├── .gitignore
-
 ├── README.md
-
-
+```
 
 ---
 
