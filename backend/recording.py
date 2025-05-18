@@ -7,9 +7,10 @@ from langdetect import detect
 from openai import OpenAI
 import os
 import time
+from dotenv import load_dotenv
+load_dotenv()
 
-# api = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=api)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY")) 
 # Set your API key
 
 # ---- Core functions ----
