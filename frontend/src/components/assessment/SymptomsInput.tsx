@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import VoiceRecorder from '../ui/VoiceRecorder';
+import VoiceRecorder from '../VoiceRecorder/VoiceRecorder';
 import { VoiceRecognitionResult } from '../../types';
 import Button from '../ui/Button';
 import { ArrowRight } from 'lucide-react';

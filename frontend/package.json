@@ -10,15 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@reverieit/reverie-client": "^0.4.0",
     "chart.js": "^4.4.1",
+    "dotenv": "^16.5.0",
     "framer-motion": "^11.0.5",
     "lucide-react": "^0.344.0",
     "openai": "^4.100.0",
-    "react": "^18.3.1",
+    "react": "^19.1.0",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.22.1",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.0",
     "reverie-client": "^0.1.2",
     "socket.io-client": "^4.8.1"
   },
