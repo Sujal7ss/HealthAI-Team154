@@ -7,7 +7,6 @@ interface Props {
 }
 
 const languageOptions = [
-  { code: "auto", name: "Auto-detect" },
   { code: "en", name: "English" },
   { code: "hi-IN", name: "Hindi" },
   { code: "bn-IN", name: "Bengali" },
@@ -17,6 +16,8 @@ const languageOptions = [
   { code: "gu-IN", name: "Gujarati" },
   { code: "kn-IN", name: "Kannada" },
   { code: "ml-IN", name: "Malayalam" },
+  { code: "ur", name: "Urdu" },
+  	
 ];
 
 const LanguageSelector: React.FC<Props> = ({ srcLang, tgtLang, setSrcLang, setTgtLang, isRecording }) => (
