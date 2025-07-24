@@ -134,7 +134,12 @@ const Login: React.FC = () => {
               </Button>
             </div>
           </form>
-
+          <div className="mt-6 text-center text-sm text-neutral-600">
+            Don't have an account?{' '}
+            <a href="/signup" className="font-medium text-primary-600 hover:text-primary-500">
+              Sign up here
+            </a>
+          </div>
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">

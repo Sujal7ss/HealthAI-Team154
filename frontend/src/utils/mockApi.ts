@@ -111,6 +111,13 @@ const mockDiagnosticResults: DiagnosticResult[] = [
 
 // Mock authentication API
 export const mockAuth = {
+  register: async (email: string, password: string, name: string) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({ email, name, id: Date.now().toString() });
+      }, 1000);
+    });
+  },
   login: async (email: string, password: string): Promise<User | null> => {
     await delay(1000);
     if (email === "doctor@example.com" && password === "password") {

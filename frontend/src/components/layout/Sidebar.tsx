@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   };
 
   const navItems = [
-    { icon: <Home size={20} />, text: 'Dashboard', path: '/' },
+    { icon: <Home size={20} />, text: 'Dashboard', path: '/dashboard' },
     { icon: <UserPlus size={20} />, text: 'New Assessment', path: '/assessment/new' },
     { icon: <Users size={20} />, text: 'Patient Records', path: '/patients' },
     { icon: <Activity size={20} />, text: 'Diagnostics', path: '/diagnostics' },

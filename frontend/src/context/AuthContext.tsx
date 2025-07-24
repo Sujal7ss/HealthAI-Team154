@@ -7,6 +7,7 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<boolean>;
   logout: () => Promise<void>;
 }
 
@@ -32,6 +33,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     initAuth();
   }, []);
+
+  const register = async (email: string, password: string, name: string) => {
+  setLoading(true);
+  setError(null);
+  try {
+    const user = await mockAuth.register(email, password, name); // adjust to your mock/service
+    if (user) {
+      setUser(user);
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      return true; // allow redirect after successful registration
+    } else {
+      setError('Registration failed. Please try again.');
+      return false;
+    }
+  } catch (err) {
+    console.error('Registration error:', err);
+    setError('An error occurred during registration');
+    return false;
+  } finally {
+    setLoading(false);
+  }
+};
 
   const login = async (email: string, password: string) => {
     setLoading(true);
@@ -66,7 +89,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, error, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );
