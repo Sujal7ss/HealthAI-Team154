@@ -4,17 +4,32 @@ import { createSendToken } from '../utils/jwt.js';
 
 export const register = async (req, res, next) => {
   try {
-    const { name, email, password, role } = req.body;
-    
-    const user = await User.create({
-      name,
-      email,
-      password,
-      role
-    });
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return next(new AppError('Please provide name, email, and password', 400));
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return next(new AppError('Email already registered. Please log in.', 400));
+    }
+
+    const user = await User.create({ name, email, password });
 
     createSendToken(user, 201, res);
   } catch (err) {
+    // Handle Mongoose validation error
+    if (err.name === 'ValidationError') {
+      const messages = Object.values(err.errors).map(el => el.message);
+      return next(new AppError(`Invalid input data: ${messages.join(', ')}`, 400));
+    }
+
+    // Duplicate key error
+    if (err.code === 11000) {
+      return next(new AppError('Duplicate field value entered', 400));
+    }
+
     next(err);
   }
 };
@@ -50,6 +65,10 @@ export const logout = (req, res) => {
 export const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
+    if (!user) {
+      return next(new AppError('User not found', 404));
+    }
+
     res.status(200).json({
       status: 'success',
       data: user

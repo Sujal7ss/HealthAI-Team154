@@ -19,11 +19,6 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
     select: false
   },
-  role: {
-    type: String,
-    enum: ['doctor', 'assistant'],
-    default: 'doctor'
-  },
   avatar: String,
   createdAt: {
     type: Date,
@@ -39,9 +34,12 @@ userSchema.pre('save', async function(next) {
 });
 
 // Generate JWT token
-userSchema.methods.generateAuthToken = function() {
+userSchema.methods.generateAuthToken = function () {
+  if (!process.env.JWT_SECRET || !process.env.JWT_EXPIRES_IN) {
+    throw new Error('JWT_SECRET or JWT_EXPIRES_IN not set in environment');
+  }
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN
+    expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 

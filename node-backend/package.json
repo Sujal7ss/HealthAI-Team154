@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js",
+    "dev": "nodemon app.js",
     "test": "NODE_ENV=test jest --detectOpenHandles",
     "lint": "eslint .",
     "format": "prettier --write ."

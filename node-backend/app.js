@@ -1,54 +1,32 @@
 import express from 'express';
-import morgan from 'morgan';
 import cors from 'cors';
-import helmet from 'helmet';
-import mongoSanitize from 'express-mongo-sanitize';
-import xss from 'xss-clean';
-import hpp from 'hpp';
-import rateLimit from 'express-rate-limit';
+import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import errorHandler from './middlewares/errorMiddleware.js';
+import connectDB from './config/db.js';
 
-import authRoutes from './routes/authRoutes.js';
-import assessmentRoutes from './routes/assessmentRoutes.js';
-import patientRoutes from './routes/patientRoutes.js';
-import diagnosticRoutes from './routes/diagnosticRoutes.js';
+import authRoutes from './routes/auth.js';
+import patientsRoutes from './routes/patients.js';
+import assessmentsRoutes from './routes/assessments.js';
+import diagnosticsRoutes from './routes/diagnostics.js';
+import gptRoutes from './routes/gpt.js';
+import voiceRoutes from './routes/voice.js';
 
 const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.json());
+app.use(cookieParser()); 
 
-// Security middleware
-app.use(helmet());
-app.use(cors({ origin: true, credentials: true }));
-app.use(cookieParser());
+app.use('/api/auth', authRoutes);
+app.use('/api/patients', patientsRoutes);
+app.use('/api/assessments', assessmentsRoutes);
+app.use('/api/diagnostics', diagnosticsRoutes);
+app.use('/api/gpt', gptRoutes);
+app.use('/api/voice', voiceRoutes);
 
-// Development logging
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
+const PORT = 5000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+    connectDB();
 
-// Limit requests from same API
-const limiter = rateLimit({
-  max: 100,
-  windowMs: 60 * 60 * 1000,
-  message: 'Too many requests from this IP, please try again in an hour!'
 });
-app.use('/api', limiter);
-
-// Body parser
-app.use(express.json({ limit: '10kb' }));
-
-// Data sanitization
-app.use(mongoSanitize());
-app.use(xss());
-app.use(hpp());
-
-// Routes
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/assessments', assessmentRoutes);
-app.use('/api/v1/patients', patientRoutes);
-app.use('/api/v1/diagnostics', diagnosticRoutes);
-
-// Error handling
-app.use(errorHandler);
-
-export default app;
