@@ -132,7 +132,6 @@ Open your browser and navigate to http://localhost:3000 to interact with the Hea
 | **Speech & NLP** | Whisper, Google Speech-to-Text, NLLB             |
 | **LLM Analysis** | GPT-4, LLaMA (fine-tuned on medical data)        |
 | **Diagnostics**  | CNN Models (ECG, X-rays e.g., CheXNet)           |
-| **Storage**      | HIPAA-compliant local/cloud storage              |
 
 ---
 
