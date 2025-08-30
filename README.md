@@ -74,7 +74,7 @@ Ensure you have the following installed on your system:
 - **Git** (to clone the repository)
 - **GPU** (recommended for running models like Whisper and LLMs)
   
-  ### 📥 Step 1: Clone the Repository
+### 📥 Step 1: Clone the Repository
 
 Open your terminal and execute:
 
