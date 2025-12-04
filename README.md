@@ -1,182 +1,214 @@
-# 🧠 HealthAI-Team154
+# 🛰️ Lost & Found Platform (Real-Time, Family-Based, AI-Powered)
 
-**Team Vikarna** | NIT Raipur
-
-An AI-powered diagnostic assistant designed to enhance rural healthcare by addressing language barriers, inconsistent records, and limited diagnostic tools.
+A real-time **Lost & Found tracking platform** that uses **AI-powered face matching**, **geo-fencing**, and **live location updates** to help families track missing members efficiently. The platform features **family-specific visibility**, **Socket.io live streaming**, and **MapLibre** for open-source maps.
 
 ---
 
-## 🚑 Problem Statement
+## 🚀 Features
 
-Rural healthcare in India faces significant challenges:
+### 🔍 AI-Powered Face Matching
 
-- **Language Barriers**: Diverse languages hinder accurate assessments.
-- **Inconsistent Records**: Manual paperwork leads to incomplete patient histories.
-- **Limited Diagnostic Tools**: Lack of advanced equipment and specialists delays diagnoses.
+* Upload an image to search for potential matches across the user base.
+* Uses a lightweight ML model to compute face embeddings and match similarity.
+
+### 👨‍👩‍👧 Family-Based Visibility
+
+* Each user belongs to a **family group**.
+* Users can see only:
+
+  * Their own family members
+  * The family head
+* Ensures privacy and secure access control.
+
+### 📡 Real-Time Location Tracking
+
+* Live location updates every **20 seconds** via **Socket.io**.
+* Automatic re-subscription on reconnect.
+* Shows the **last known location** if the user disconnects.
+
+### 🗺️ Dynamic Map Visualization
+
+* Uses **MapLibre GL** (fully open-source alternative to Google Maps).
+* Real-time markers for all active family members.
+* Smooth transitions based on live data stream.
+
+### 🛡️ Geo-Fencing Alerts
+
+* Define a safe region.
+* Trigger warnings when a member moves **outside** the boundary.
+
+### 🔐 Secure Backend
+
+* Built using **Express.js**, **MongoDB**, and **JWT authentication**.
+* Role-based access (Family Head, Member).
+* Robust validation and error handling.
 
 ---
 
-## 💡 Our Solution
+## 🏗️ Tech Stack
 
-An AI-driven platform that assists doctors through:
+### **Frontend**
 
-1. **Conversation-to-Assessment Assistant**:
-   - Records doctor-patient interactions in any language.
-   - Translates speech to English using advanced NLP models.
-   - Extracts symptoms, suggests diagnoses, and highlights red flags via LLMs.
-   - Presents a concise, visual dashboard of the case assessment.
+* React.js
+* JavaScript (ES6)
+* MapLibre GL
+* Socket.io Client
 
-2. **Diagnostic Interpretation Assistant**:
-   - Interprets data from diagnostic devices (e.g., ECGs, X-rays).
-   - Uses pre-trained models to identify abnormalities.
-   - Empowers general physicians with informed decision-making tools.
+### **Backend**
 
----
+* Node.js
+* Express.js
+* MongoDB (Mongoose)
+* Socket.io Server
+* JWT Authentication
 
-   ### 💰 Business Model
-   
-1. **B2B SaaS**: Offer subscription-based access to hospitals and clinics, providing scalable AI diagnostics and multilingual assistance.
+### **AI / ML**
 
-2. **Freemium Model**: Provide essential features for free to encourage adoption, with premium diagnostics and advanced analytics available through paid tiers.
-
-3. **API Licensing**: License our AI diagnostic APIs to medical device manufacturers, enabling integration into their products and expanding our reach.
-
-4. **Data Analytics Services**: Offer anonymized health data insights to researchers and public health agencies, ensuring compliance with data privacy regulations.
-
-5. **Training & Certification**: Provide online training modules and certification programs for healthcare professionals to ensure effective use of our platform.
+* Face embedding generation
+* Image similarity scoring
+* Lightweight model for fast inference
 
 ---
 
-## 📁 File Structure
+## 📁 Folder Structure
+
 ```
-HealthAI-Team154/
-├── backend/
-│ ├── fastapi/ # Python backend for clinical NLP and ML models
-│ └── node-backend/ # Node.js backend for user authentication and session management
-├── ecgbackend/ # Backend for ECG data processing
-├── frontend/ # React-based responsive frontend
-├── .gitignore
-├── README.md
+/client
+  /src
+    /components
+    /pages
+    /hooks
+    /utils
+
+/server
+  /controllers
+  /models
+  /routes
+  /middlewares
+  /services
+
+/ml-service (optional)
+  /face-matching
 ```
 
 ---
 
-## 🚀 How to Run the Project
+## 🔧 Environment Variables
 
-### 🧩 Prerequisites
+Create a `.env` file in `/server`:
 
-Ensure you have the following installed on your system:
+```
+PORT=5000
+MONGO_URI=your_mongo_connection_string
+JWT_SECRET=your-secret-key
+```
 
-- **Python**: Version 3.9 or higher
-- **Node.js**: Version 18 or higher
-- **npm** or **yarn**
-- **virtualenv** (for Python environments)
-- **Git** (to clone the repository)
-- **GPU** (recommended for running models like Whisper and LLMs)
-  
-  ### 📥 Step 1: Clone the Repository
+If using an external ML service:
 
-Open your terminal and execute:
+```
+ML_SERVICE_URL=http://localhost:8000/match
+```
+
+---
+
+## 🛠️ Installation & Setup
+
+### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/Sujal7ss/HealthAI-Team154.git
-cd HealthAI-Team154
+git clone https://github.com/your-username/lost-and-found.git
+cd lost-and-found
 ```
 
-  ### 🔧 Step 2: Set Up the Backend
-  
-a. FastAPI (Python Backend)
+### 2️⃣ Install Dependencies
+
+Frontend:
 
 ```bash
-cd backend/fastapi
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn main:app --reload
-```
-
-This will start the FastAPI server on http://127.0.0.1:8000.
-
-b. Node.js Backend
-
-```bash
-cd ../node-backend
+cd client
 npm install
-node index.js
 ```
 
-This will start the Node.js server on the default port (usually http://localhost:3001).
-
-  ### 💻 Step 3: Set Up the Frontend
+Backend:
 
 ```bash
-cd ../../frontend
+cd server
 npm install
+```
+
+### 3️⃣ Start the App
+
+Backend:
+
+```bash
+npm run dev
+```
+
+Frontend:
+
+```bash
 npm start
 ```
 
-This will start the React frontend on http://localhost:3000.
+---
 
-  ### ✅ Step 4: Access the Application
+## ⚡ Real-Time Flow Overview
 
-Open your browser and navigate to http://localhost:3000 to interact with the HealthAI application.
+1. User logs in → receives JWT token.
+2. User shares live location → Socket.io sends updates every 20 seconds.
+3. Backend stores last known location and broadcasts to relevant family members.
+4. Map updates markers in real time.
+5. Geo-fence rules checked for every update → send alert if breached.
+6. For missing person reports → Face matching generates top similarity matches.
 
 ---
 
-## 🛠️ Tech Stack
 
-| Layer            | Tools Used                                        |
-|------------------|--------------------------------------------------|
-| **Frontend**     | React.js, Tailwind CSS                           |
-| **Backend**      | FastAPI (Python), Node.js                        |
-| **Speech & NLP** | Whisper, Google Speech-to-Text, NLLB             |
-| **LLM Analysis** | GPT-4, LLaMA (fine-tuned on medical data)        |
-| **Diagnostics**  | CNN Models (ECG, X-rays e.g., CheXNet)           |
+## 🧪 API Endpoints (Short Version)
 
----
+### **Auth**
 
-## 🧬 Model Architecture Overview
+| Method | Endpoint       | Description       |
+| ------ | -------------- | ----------------- |
+| POST   | /auth/register | Create account    |
+| POST   | /auth/login    | Login & get token |
 
-Our system integrates multiple AI models to enhance diagnostic accuracy and efficiency:
+### **Family & Users**
 
-### 1. **Speech Recognition & Translation**
-- **Whisper**: Transcribes multilingual doctor-patient conversations into text.
-- **NLLB (No Language Left Behind)**: Translates transcriptions into English, ensuring language inclusivity.
+| Method | Endpoint        | Description         |
+| ------ | --------------- | ------------------- |
+| GET    | /family/members | List family members |
+| POST   | /family/add     | Add a new user      |
 
-### 2. **Clinical NLP & Assessment**
-- **GPT-4 / LLaMA (fine-tuned)**: Processes translated conversations to extract symptoms, suggest possible diagnoses, and highlight critical red flags.
+### **Location**
 
-### 3. **Diagnostic Image & Signal Interpretation**
-- **CheXNet**: Analyzes chest X-rays to detect potential abnormalities.
-- **Custom CNN Models**: Processes ECG data to identify irregularities and assist in cardiac assessments.
+| POST | /location/update | Update user location |
+| GET | /location/last | Get last known location |
 
-These models collectively provide a comprehensive diagnostic overview, aiding physicians in making informed decisions.
+### **AI**
+
+| POST | /ai/match | Upload image & find similar faces |
 
 ---
 
-## 📊 Impact and Use Cases
+## 🧩 Architecture Diagram (Text Version)
 
-- **General Physicians** in under-resourced areas.
-- **Mobile Health Clinics** and NGO healthcare providers.
-- **Public Health Missions** like Ayushman Bharat and NHM.
+```
+[React Frontend] 
+    ↕ Socket.io
+    ↕ REST APIs
+[Express Backend] 
+    ↕
+[MongoDB]
 
----
-
-## 👨‍💻 Team Vikarna
-
-| Name                  | Branch               | Institute       |
-|-----------------------|----------------------|-----------------|
-| Sujal Chahande        | Computer Science     | NIT Raipur      |
-| Anshul Satone         | Computer Science     | NIT Raipur      |
-| Mayank Sahu           | Electrical Engineering| NIT Raipur     |
-| Ujjwal Agrawal        | Information Technology| NIT Raipur     |
-| Shivajay Saxena       | Computer Science     | NIT Raipur      |
-| MD Gulam Gaush Ansari | Computer Science     | NIT Raipur      |
+[Optional ML Face-Matching Service]
+```
 
 ---
 
-## 📎 References
+## 📜 License
 
-- [ChatGPT for Discharge Summaries - J Korean Med Sci. 2024](https://doi.org/10.3346/jkms.2024.39.e148)
-- [MedRxiv: Bridging Rural Health Gap](https://www.medrxiv.org/content/10.1101/2024.07.30.24311228v1)
+MIT License.
+
+---
 
